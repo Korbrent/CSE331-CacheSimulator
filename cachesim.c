@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "lab2.h"
 
 // Cache simulator main function
@@ -55,12 +56,19 @@ int main(int argc, char *argv[]){
     printf("Miss penalty: %d\n", MISS_PENALTY);
     printf("Write policy: %d\n", WRITE_POLICY);
 
+    // Create the cache
+    struct Cache cache;
+    cache = createCache(config);
+    printCache(cache);
 
     FILE *traceFile = fopen(argv[2], "r");
     if(traceFile == NULL){
         printf("Error: Trace file not found.\n");
         return 1;
     }
+
+    // Read the trace file
+    int *out = readTraceFile(traceFile);
 
 
 
