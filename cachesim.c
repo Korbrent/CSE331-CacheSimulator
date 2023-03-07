@@ -68,10 +68,13 @@ int main(int argc, char *argv[]){
     }
 
     // Read the trace file
-    int *out = readTraceFile(traceFile);
+    struct SimData output = readTraceFile(traceFile, cache);
 
 
-
+    /*
+     * TODO: Print the output
+     * Free the cache
+     */
     return 0;
 }
 
