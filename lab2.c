@@ -25,16 +25,19 @@ int isPowerOfTwo(int x){
  * @return: An array of the binary representation of n
  */
 int* intToBinary(int n, int bits){
+    // Calculate the number of bits needed to represent n
     int b = ceil(log2(n));
+
+    // Check if the number of bits is valid
     if(bits == 0){
         return NULL;
     }
-
     if(b > bits){
         printf("Error: The number %d cannot be represented in %d bits.\n", n, bits);\
         exit(1);
     }
 
+    // Allocate memory for the binary string (must be freed by the caller)
     int *binary;
     binary = malloc(sizeof(int) * bits);
     if(binary == NULL){
@@ -42,11 +45,12 @@ int* intToBinary(int n, int bits){
         printf("%d n %d bits\n", n, bits);
         exit(1);
     }
+
+    // Convert the integer to binary
     for(int i = bits - 1; i >= 0; i--){
         binary[i] = n % 2;
         n /= 2;
     }
-
     return binary;
 }
 
@@ -61,7 +65,9 @@ int* hexToBinary(char *hex){
         printf("Error: Could not allocate memory for binary.\n");
         exit(1);
     }
+    // Convert each hex character to binary
     for(int i = 0; i < 8; i++){
+        // Grab the integer value of the hex character
         int hexVal = 0;
         if(hex[i] >= '0' && hex[i] <= '9'){
             hexVal = hex[i] - '0';
@@ -73,8 +79,9 @@ int* hexToBinary(char *hex){
             printf("Error: Invalid hex character: %c.\n", hex[i]);
             exit(1);
         }
-
+        // Convert the int value to binary
         int *tmp = intToBinary(hexVal, 4);
+        // Add the binary value to the binary string
         for(int j = 0; j < 4; j++){
             binary[i * 4 + j] = tmp[j];
         }
@@ -120,13 +127,14 @@ int* readConfig(FILE *configFile){
     }
 
     int i = 0;
+    // Read each line of the config file
     while(fgets(line, sizeof(line), configFile)){
-        // printf("%s\n", line);
-        int tmp = atoi(line);
+        int tmp = atoi(line); // Convert the line to an int
 
         switch (i)
         {
         case 0:
+            // LINE SIZE: Block size for the cache in bytes
             if(!isPowerOfTwo(tmp)){
                 printf("Error: Line size is not a power of 2.\n");
                 exit(1);
@@ -134,6 +142,7 @@ int* readConfig(FILE *configFile){
             config[0] = tmp;
             break;
         case 1:
+            // ASSOCIATIVITY: Number of blocks per set
             if(!isPowerOfTwo(tmp) && tmp != 0){
                 printf("Error: Associativity is not a power of 2.\n");
                 exit(1);
@@ -141,6 +150,7 @@ int* readConfig(FILE *configFile){
             config[1] = tmp;
             break;
         case 2:
+            // DATA SIZE: Size of the cache in kilobytes
             if(!isPowerOfTwo(tmp)){
                 printf("Error: Data size is not a power of 2.\n");
                 exit(1);
@@ -148,6 +158,7 @@ int* readConfig(FILE *configFile){
             config[2] = tmp;
             break;
         case 3:
+            // REPLACEMENT POLICY: 0 for random, 1 for FIFO
             if(tmp != 0 && tmp != 1){
                 printf("Error: Replacement policy is not 0 or 1.\n");
                 exit(1);
@@ -155,9 +166,12 @@ int* readConfig(FILE *configFile){
             config[3] = tmp;
             break;
         case 4:
+            // MISS_PENALTY: Number of cycles used on a miss
             config[4] = tmp;
             break;
         case 5:
+            // WRITE POLICY: 0 for write-through + no write allocate,
+            //               1 for write-back + write allocate
             if(tmp != 0 && tmp != 1){
                 printf("Error: Write policy is not 0 or 1.\n");
                 exit(1);

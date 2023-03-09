@@ -58,18 +58,16 @@ int main(int argc, char *argv[]){
     printf("Replacement policy: %d\n", REPLACEMENT_POLICY);
     printf("Miss penalty:       %d\n", MISS_PENALTY);
     printf("Write policy:       %d\n", WRITE_POLICY);
-    // sleep(5);
 
     // Create the cache
     struct Cache cache;
     cache = createCache(config);
     free(config);
-    // printCache(cache);
     printf("Total Blocks:       %d blocks\n", cache.config.numBlocks);
     printf("Total Sets:         %d sets\n", cache.blockConfig.numSets);
     printf("Blocks/Set:         %d blocks\n", cache.config.associativity);
     printf("Bits/Block:         %d bits\n", cache.blockConfig.blockSize);
-
+    
     FILE *traceFile = fopen(argv[2], "r");
     if(traceFile == NULL){
         printf("Error: Trace file not found.\n");
