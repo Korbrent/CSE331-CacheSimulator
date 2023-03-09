@@ -16,6 +16,8 @@ struct SimData readTraceFile(FILE* traceFile, struct Cache cache){
         printf("Error: Could not allocate memory for line.\n");
         exit(1);
     }
+
+    // Initialize the simulation data
     struct SimData data;
     data.cycles = 0;
     data.totalOps = 0;
@@ -23,14 +25,8 @@ struct SimData readTraceFile(FILE* traceFile, struct Cache cache){
     data.loadMisses = 0;
     data.storeHits = 0;
     data.storeMisses = 0;
-    
 
-    printf("\nReading trace file...\n");
     while (fgets(line, 32, traceFile)){
-        // Print the line
-      //* printf("\nRead line: ");
-      //* printf("%s\n", line);
-
         // Get the operation
         char op = line[0];
 
@@ -40,30 +36,22 @@ struct SimData readTraceFile(FILE* traceFile, struct Cache cache){
             printf("Error: Could not allocate memory for address.\n");
             exit(1);
         }
-
+        // Copy the address from the line
         for(int i = 0; i < 8; i++)
             address[i] = line[i + 4];
-        // printf("Address: %s\n", address);
 
         // Convert address to binary
         int *addressBin = hexToBinary(address);
         free(address);
 
-      //* printf("Address in binary: ");
-        // for(int i = 0; i < 32; i++)
-            // printf("%d", addressBin[i]);
-        // printf("\n");
-
-        // Create and run the trace
+        // Create the trace struct
         struct Trace trace;
         trace.accessType = op;
         trace.address = addressBin;
         trace.cycles = line[13] - '0';
-      //* printf("Cycles since last access: %d\n", trace.cycles);
 
         // Run the trace
         data = runTrace(cache, trace, data);
-        // data.cycles += trace.cycles;
         free(addressBin);
     }
 
@@ -79,34 +67,24 @@ struct SimData readTraceFile(FILE* traceFile, struct Cache cache){
  * @param simData: The simulation data struct to update
  */
 struct SimData runTrace(struct Cache cache, struct Trace trace, struct SimData simData){
-    // TODO
-  //* printf("\nRunning %s trace on ", trace.accessType == 'l' ? "load" : "store");
-    // for(int i = 0; i < 32; i++)
-        // printf("%d", trace.address[i]);
-    // printf("\n");
-
     // Get the memory address
     int *address = trace.address;
     unsigned int addressInt = binaryToInt(address, 32);
 
     // Get the set index
-    // printf("Address: %u\n", addressInt);
-    // printf("Number of sets: %d\n", cache.blockConfig.numSets);
     int setIndex = addressInt % cache.blockConfig.numSets;
-    // printf("Set index: %d \n", setIndex);
 
     int **set = cache.cache[setIndex];
     int blocksPerSet = cache.config.associativity;
-    // printf("Blocks per set: %d\n", blocksPerSet);
+
     // Check if the address is in the set
     int blockIndex = existsInSet(set, blocksPerSet, address, cache.blockConfig);
-    // printf("Block index: %d\n", blockIndex);
+    
     int cycles = trace.cycles;
     switch (trace.accessType)
     {
     case 's':
-      //* printf("\nStore op\n");
-        // printBlockLayout(cache.blockConfig);
+        // Simulate the store operation
         cycles += store(cache, setIndex, blockIndex, trace);
 
         if(blockIndex == -1)
@@ -116,9 +94,9 @@ struct SimData runTrace(struct Cache cache, struct Trace trace, struct SimData s
 
         break;
     case 'l':
-      //* printf("\nLoad op\n");
-      //* printBlockLayout(cache.blockConfig);
+        // Simulate the load operation
         cycles += load(cache, setIndex, blockIndex, trace);
+        
         if(blockIndex == -1)
             simData.loadMisses++;
         else
@@ -126,7 +104,7 @@ struct SimData runTrace(struct Cache cache, struct Trace trace, struct SimData s
         
         break;
     default:
-        printf("Error: Invalid access type.\n");
+        printf("Error: Invalid access type. %c\n", trace.accessType);
         exit(1);
     }
 
