@@ -48,7 +48,9 @@ struct SimData readTraceFile(FILE* traceFile, struct Cache cache){
         struct Trace trace;
         trace.accessType = op;
         trace.address = addressBin;
-        trace.cycles = line[13] - '0';
+        trace.cycles = 0;
+        for(int i = 13; (line[i] >= '0') && (line[i] <= '9'); i++)
+            trace.cycles = (trace.cycles * 10) + (line[i] - '0');
 
         // Run the trace
         data = runTrace(cache, trace, data);
