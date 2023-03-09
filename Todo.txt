@@ -4,7 +4,7 @@ REMINDER:
 	(Write Through + No Write Allocate : Dirty Bit = F)
 
 TODO:
-	Trace.C: readTraceFile() needs to be fixed when calculating the miss cycles
+	Output to a `.out` file. 
 
 gcc.trace results:
 	testFA: 
