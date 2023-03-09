@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "lab2.h"
-
+//trace.accessType == 'l' ? "load" : "store"
 int main(int argc, char *argv[]){
     // int* config = malloc(sizeof(int) * 6);
     // config[0] = 4;

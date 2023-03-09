@@ -3,6 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 #include "lab2.h"
+#include "cache.h"
+#include "trace.h"
 
 // Cache simulator main function
 int main(int argc, char *argv[]){
@@ -42,6 +44,7 @@ int main(int argc, char *argv[]){
 
     // Read the config file
     int* config = readConfig(configFile);
+
     LINE_SIZE = config[0];
     ASSOCIATIVITY = config[1];
     DATA_SIZE = config[2];
@@ -49,17 +52,23 @@ int main(int argc, char *argv[]){
     MISS_PENALTY = config[4];
     WRITE_POLICY = config[5];
 
-    printf("Line size: %dB\n", LINE_SIZE);
-    printf("Associativity: %d-way mapping\n", ASSOCIATIVITY);
-    printf("Data size: %dKB\n", DATA_SIZE);
+    printf("Line size:          %d B\n", LINE_SIZE);
+    printf("Associativity:      %d-way mapping\n", ASSOCIATIVITY);
+    printf("Data size:          %d KB\n", DATA_SIZE);
     printf("Replacement policy: %d\n", REPLACEMENT_POLICY);
-    printf("Miss penalty: %d\n", MISS_PENALTY);
-    printf("Write policy: %d\n", WRITE_POLICY);
+    printf("Miss penalty:       %d\n", MISS_PENALTY);
+    printf("Write policy:       %d\n", WRITE_POLICY);
+    // sleep(5);
 
     // Create the cache
     struct Cache cache;
     cache = createCache(config);
-    printCache(cache);
+    free(config);
+    // printCache(cache);
+    printf("Total Blocks:       %d blocks\n", cache.config.numBlocks);
+    printf("Total Sets:         %d sets\n", cache.blockConfig.numSets);
+    printf("Blocks/Set:         %d blocks\n", cache.config.associativity);
+    printf("Bits/Block:         %d bits\n", cache.blockConfig.blockSize);
 
     FILE *traceFile = fopen(argv[2], "r");
     if(traceFile == NULL){
@@ -69,12 +78,17 @@ int main(int argc, char *argv[]){
 
     // Read the trace file
     struct SimData output = readTraceFile(traceFile, cache);
+    
+    freeCache(cache);
 
+    // Print the output
+    printf("Total operations:   %d\n", output.totalOps);
+    printf("Load hits:          %d\n", output.loadHits);
+    printf("Store hits:         %d\n", output.storeHits);
+    printf("Load misses:        %d\n", output.loadMisses);
+    printf("Store misses:       %d\n", output.storeMisses);
+    printf("Total cycles:       %d\n", output.cycles);
 
-    /*
-     * TODO: Print the output
-     * Free the cache
-     */
     return 0;
 }
 

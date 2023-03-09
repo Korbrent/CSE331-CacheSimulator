@@ -7,19 +7,48 @@
 #define LAB2_H
 
 
+// Cache structs
+
+// Config struct holds the configuration of the cache
+struct config
+{
+    int lineSize;           // Line size in bytes
+    int associativity;      // Blocks per set
+    int dataSize;           // Data size in Kilobytes
+    int replacementPolicy;  // 1 for FIFO, 0 for random
+    int missPenalty;        // Cycles for a miss
+    int writePolicy;        // 0 = (write-through,no-write-allocate)
+                            // 1 = (write-back,write-allocate)
+    int numBlocks;          // number of blocks in the cache
+};
+
+// BlockConfig struct holds the configuration of a block in the cache
+/* A block is ordered [Valid Bit] [Dirty Bit] [Set Index] [Tag Bits] [Fifo Bits] [Block Offset]*/
+struct blockConfig
+{
+    int validBit;       // 1 bit
+    int dirtyBit;       // 1 bit if write-back, 0 if write-through
+    int setIndexBits;   // log2(numSets)
+    int tagBits;        // 32
+    int fifoBits;       // log2(blocksPerSet)
+    int blockOffsetBits;// log2(lineSize)
+    int blockSize;      // total bits in a block
+    int numSets;        // log2(numSets) = setIndexBits
+};
+
+// Cache struct holds the cache itself and the configuration of the cache
 struct Cache
 {
-    /* A block is ordered [Valid Bit] [Dirty Bit] [Set Index] [Tag Bits] [Fifo Bits] [Block Offset]*/
     int ***cache;     // cache[sets][blocks][bits]
-    int *config;      // lineSize, associativity, dataSize, replacementPolicy, missPenalty, writePolicy
-    int *blockConfig; // dirtyBit, FIFO bits, tag length, number of sets, block offset bit length, block size
+    struct config config;
+    struct blockConfig blockConfig;
 };
 
 struct Trace
 {
     char accessType;  // 'l' for load, 's' for store
     int *address;     // 32-bit address
-    int cyclesSinceLastAccess; // Cycles since last access
+    int cycles;       // Cycles since last access
 };
 
 struct SimData
@@ -29,8 +58,7 @@ struct SimData
     int storeHits;    // Number of store hits
     int loadMisses;   // Number of load misses
     int storeMisses;  // Number of store misses
-
-    int cycles;
+    int cycles;       // Total cycles
 };
 
 // Conversion functions
@@ -41,25 +69,5 @@ int binaryToInt(int* binary, int bits);
 
 // Config file functions
 int* readConfig(FILE *configFile);
-
-// Cache initialization functions
-struct Cache createCache(int* config);
-void printCache(struct Cache cache);
-void printSet(int **set, int blocksPerSet, int blockSize, int setIndex);
-
-// Cache access functions
-void fifo(struct Cache cache, int setIndex, int *newTag);
-void random(struct Cache cache, int setIndex, int *newTag);
-int load(struct Cache cache, int setIndex, int blockIndex, struct Trace trace);
-int store(struct Cache cache, int setIndex, int blockIndex, struct Trace trace);
-// void replaceBlock();
-// void updateFifoBits();
-// void updateDirtyBit();
-
-
-// Trace file functions
-struct SimData readTraceFile(FILE* traceFile, struct Cache cache);
-void runTrace(struct Cache cache, struct Trace trace, struct SimData simData);
-int existsInSet(int **set, int blocksPerSet, int *address, int *blockConfig);
 
 #endif

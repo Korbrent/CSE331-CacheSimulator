@@ -7,7 +7,13 @@ all: cachesim
 lab2.o: lab2.c
 	$(CC) $(CFLAGS) -c $^ $(LFLAGS)
 
-cachesim: cachesim.c lab2.o
+cache.o: cache.c
+	$(CC) $(CFLAGS) -c $^ $(LFLAGS)
+
+trace.o: trace.c
+	$(CC) $(CFLAGS) -c $^ $(LFLAGS)
+
+cachesim: main.c lab2.o cache.o trace.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
 
 test: test.c lab2.o

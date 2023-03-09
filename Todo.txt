@@ -1,0 +1,21 @@
+REMINDER: 
+	(Write Back + Write Allocate : Dirty Bit = T)
+ 				& 
+	(Write Through + No Write Allocate : Dirty Bit = F)
+
+TODO:
+	Trace.C: readTraceFile() needs to be fixed when calculating the miss cycles
+
+gcc.trace results:
+	testFA: 
+	
+	testDM:
+	
+	test4n:
+
+
+
+###
+
+
+COMMENTS
