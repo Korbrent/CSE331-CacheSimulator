@@ -20,11 +20,9 @@ struct Cache createCache(int* config){
 
     // Cache size is in kilobytes, so we need to convert it to bytes
     dataSize *= 1024;
-    // printf("Data size in bytes: %dB\n", dataSize);
 
     // Calculate the number of blocks in the cache
     int numBlocks = dataSize / lineSize;
-    // printf("Number of blocks: %d\n", numBlocks);
 
     // Calculate the number of sets in the cache
     int numSets;
@@ -44,13 +42,10 @@ struct Cache createCache(int* config){
         break;
     }
     associativity = config[1];
-    // printf("Associativity: %d\n", config[1]);
-    // printf("Number of sets: %d\n", numSets);
 
     // A block is ordered [Valid Bit] [Dirty Bit] [Set Index] [Tag Bits] [Fifo Bits] [Block Offset]
     // [Valid Bit]
     ret.blockConfig.validBit = 1;
-    // printf("Valid bit: %d\n", ret.blockConfig.validBit);
     // [Dirty Bit]
     if(config[5] == 1){
         // Write policy is write-through
@@ -58,17 +53,14 @@ struct Cache createCache(int* config){
     } else {
         ret.blockConfig.dirtyBit = 0;
     }
-    // printf("Dirty bit: %d\n", ret.blockConfig.dirtyBit);
     // [Set Index]
     ret.blockConfig.setIndexBits = log2(numSets);
     if(numSets == 1){
         // Fully associative
         ret.blockConfig.setIndexBits = 0;
     }
-    // printf("Set index bits: %d\n", ret.blockConfig.setIndexBits);
     // [Tag Bits]
     ret.blockConfig.tagBits = 32;
-    // printf("Tag bits: %d\n", ret.blockConfig.tagBits);
     // [Fifo Bits]
     if(config[3] == 1){
         // Replacement policy is FIFO
@@ -78,15 +70,12 @@ struct Cache createCache(int* config){
     }
     // [Block Offset]
     ret.blockConfig.blockOffsetBits = log2(lineSize);
-    // printf("Block offset bits: %d\n", ret.blockConfig.blockOffsetBits);
 
     ret.blockConfig.blockSize = ret.blockConfig.validBit + ret.blockConfig.dirtyBit + ret.blockConfig.setIndexBits + ret.blockConfig.tagBits + ret.blockConfig.fifoBits + ret.blockConfig.blockOffsetBits;
-    // printf("[79:] Block size: %d\n", ret.blockConfig.blockSize);
     ret.blockConfig.numSets = numSets; // log2 for set index bits
 
 
     // Create the cache
-    // printf("Building the cache now...\n");
     int ***cache = malloc(sizeof(int**) * numSets); // Create the sets
     if(cache == NULL){
         printf("Error: Cache could not be created.\n");
@@ -103,7 +92,6 @@ struct Cache createCache(int* config){
             printf("Error: Cache set #%d could not be created.\n", i);
             exit(1);
         }
-        // printf("Creating set #%d...\n", i);
 
         int *index = intToBinary(i, setIndex);
 
@@ -117,15 +105,12 @@ struct Cache createCache(int* config){
 
             for(int k = 0; k < blockSize; k++){
                 cache[i][j][k] = 0;
-                // printf("%d", cache[i][j][k]);
             }
-            // printf("Block #%d-%d created.\n", i, j);
             // Set the set index
             for(int k = 0; k < setIndex; k++){
                 cache[i][j][k + setIndexOffset] = index[k];
             }
         }
-        // printf("Set #%d created.\n", i);
         free(index);
     }
 
@@ -368,18 +353,12 @@ int load(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){
     int cycles = 1; // 1 cycle for the load operation
     int missPenalty = cache.config.missPenalty;
 
-    // int **set = cache.cache[setIndex];
-
     // Get the block
-    // int* block;
-  //* printf("Beginning load operation\n");
+    printf("Beginning load operation...\n");
     if(blockIndex == -1){
-      //* printf("Load miss: ");
-        // sleep(2);
-        // printf("Set before replacement:\n");
-        // printSet(set, cache.config.associativity, cache.blockConfig.blockSize, setIndex);
-        
         // Block was a miss
+        printf("Load miss: loading block from memory...\n");
+
         cycles += missPenalty; // Add the miss penalty
 
         // Get the replacement policy
@@ -389,30 +368,20 @@ int load(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){
         // Load the block into the cache from memory
         if(replacementPolicy){
             // FIFO
-          //* printf("FIFO\n");
-            // sleep(2);
             fifoReplacement(cache, setIndex, trace.address);
         } else{
             // Random
-          //* printf("Random\n");
-            // sleep(2);
             randomReplacement(cache, setIndex, trace.address);
         }
-        // sleep(5);
-        // printf("Set after replacement:\n");
-      //* printSet(set, cache.config.associativity, cache.blockConfig.blockSize, setIndex);
     } else{
         // Block was a hit, load block from cache
-        // block = set[blockIndex];
-      //* printf("Load hit: ");
-        printf("Loading from cache...\n");
+        printf("Load hit: loading from cache...\n");
         /**
          * Load from cache here
          * (Not implemented)
          */
-      //* printSet(set, cache.config.associativity, cache.blockConfig.blockSize, setIndex);
     }
-  //* printf("Ending load operation\n");
+
     return cycles;
 }
 
@@ -429,32 +398,25 @@ int store(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){
 
     // Get the block
     // int* block;
-  //* printf("Beginning store operation\n");
+    printf("Beginning store operation...\n");
     if(blockIndex == -1){
         // Block was a miss
-      //* printf("Store miss: ");
+        printf("Store miss: ");
         if(cache.blockConfig.dirtyBit){
             // Write allocate
-            printf("Write allocate, loading block into cache...\n");
+            printf("write allocate, loading block into cache...\n");
             /*
              * Load the block into the cache from memory
              */
-            // sleep(2);
-            // printf("Set before replacement:\n");
-            // printSet(set, cache.config.associativity, cache.blockConfig.blockSize, setIndex);
-            // sleep(2);
+
             // Get the replacement policy
             // 0 = Random, 1 = FIFO
             int replacementPolicy = cache.config.replacementPolicy;
             if(replacementPolicy){
                 // FIFO
-              //* printf("FIFO\n");
-                // sleep(2);
                 fifoReplacement(cache, setIndex, trace.address);
             } else{
                 // Random
-              //* printf("Random\n");
-                // sleep(2);
                 randomReplacement(cache, setIndex, trace.address);
             }
             // Set the dirty bit to 1
@@ -463,12 +425,10 @@ int store(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){
 
             cycles += missPenalty; // Add the miss penalty
             // sleep(5);
-          //* printf("Set after replacement:\n");
-          //* printSet(set, cache.config.associativity, cache.blockConfig.blockSize, setIndex);
         } else {
             // No write allocate
             cycles += 0; // No miss penalty
-            // printf("No write allocate, writing to memory...\n");
+            printf("no write allocate, writing to memory...\n");
             /*
              * Write to memory here
              * (Not implemented)
@@ -476,12 +436,11 @@ int store(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){
             // No miss penalty
         }
     } else{
-        printf("Store hit: ");
         // Block was a hit
-        // block = set[blockIndex];
+        printf("Store hit: ");
         if(cache.blockConfig.dirtyBit){
             // Write-back policy, write to cache (dirty bit is set to 1)
-            printf("Write-back policy, writing to the cache...\n");
+            printf("write-back policy, writing to the cache...\n");
             set[blockIndex][1] = 1; // Set dirty bit to 1
             /*
              * Write to cache here
@@ -489,7 +448,7 @@ int store(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){
              */
         } else {
             // Write-through policy, write to memory
-            printf("Write-through policy, writing to memory...\n");
+            printf("write-through policy, writing to memory...\n");
             /*
              * Write to memory here
              * (Not implemented)
@@ -508,23 +467,15 @@ int store(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){
  * @return: The index of the block if it exists, -1 if it does not
  */
 int existsInSet(int **set, int blocksPerSet, int *address, struct blockConfig blockConfig){
-    // printf("Checking if block exists in set...\n");
-    // printf("blocksPerSet: %d\n", blocksPerSet);
-    // printf("address: ");
-    // for(int i = 0; i < 32; i++){
-    //     printf("%d", address[i]);
-    // } printf("\n");
+    // Get the index offset of the tag bits
     int tagIndexOffset = 1 + blockConfig.dirtyBit + blockConfig.setIndexBits;
+
     // printBlockLayout(blockConfig);
+
     for(int i = 0; i < blocksPerSet; i++){
         int *block = set[i];
-        // printf("Block %d: \n", i);
-        // for(int j = 0; j < blockConfig.blockSize; j++){
-        //     printf("%d", block[j]);
-        // } printf("\n");
         if(block[0] == 0){
             // Block is invalid
-            // printf("Block is invalid\n");
             continue;
         }
         int j;
