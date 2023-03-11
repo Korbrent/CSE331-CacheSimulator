@@ -88,7 +88,7 @@ struct Cache createCache(int* config){
     int setIndexOffset = ret.blockConfig.validBit + ret.blockConfig.dirtyBit;
 
     for(int i = 0; i < numSets; i++){
-        int *index = intToBinary(i, setIndex);
+        int *index = intToBinary(i, setIndex); // Get the set index in binary
       
         cache[i] = malloc(sizeof(int*) * associativity); // Create the blocks
         if (cache[i] == NULL){
@@ -398,7 +398,6 @@ int store(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){
     int **set = cache.cache[setIndex];
 
     // Get the block
-    // int* block;
     printf("Beginning store operation...\n");
     if(blockIndex == -1){
         // Block was a miss
