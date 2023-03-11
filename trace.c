@@ -54,7 +54,7 @@ struct SimData readTraceFile(FILE* traceFile, struct Cache cache){
             printf("%d", addressBin[i]);
         printf("\n");
 
-        // Create and run the trace
+        // Create the trace struct
         struct Trace trace;
         trace.accessType = op;
         trace.address = addressBin;
@@ -104,6 +104,7 @@ struct SimData runTrace(struct Cache cache, struct Trace trace, struct SimData s
     switch (trace.accessType)
     {
     case 's':
+        // Simulate the store operation
         cycles += store(cache, setIndex, blockIndex, trace);
 
         if(blockIndex == -1)
@@ -113,12 +114,14 @@ struct SimData runTrace(struct Cache cache, struct Trace trace, struct SimData s
 
         break;
     case 'l':
+        // Simulate the load operation
+
         cycles += load(cache, setIndex, blockIndex, trace);
         if(blockIndex == -1)
             simData.loadMisses++;
         else
             simData.loadHits++;
-        
+
         break;
     default:
         printf("Error: Invalid access type.\n");

@@ -75,7 +75,8 @@ struct Cache createCache(int* config){
     ret.blockConfig.numSets = numSets; // log2 for set index bits
 
 
-    // Create the cache
+    // Create the cache. Structure is [Set][Block][Bit]
+
     int ***cache = malloc(sizeof(int**) * numSets); // Create the sets
     if(cache == NULL){
         printf("Error: Cache could not be created.\n");
@@ -87,13 +88,13 @@ struct Cache createCache(int* config){
     int setIndexOffset = ret.blockConfig.validBit + ret.blockConfig.dirtyBit;
 
     for(int i = 0; i < numSets; i++){
+        int *index = intToBinary(i, setIndex);
+      
         cache[i] = malloc(sizeof(int*) * associativity); // Create the blocks
         if (cache[i] == NULL){
             printf("Error: Cache set #%d could not be created.\n", i);
             exit(1);
         }
-
-        int *index = intToBinary(i, setIndex);
 
         for(int j = 0; j < associativity; j++){
             // Create the block
@@ -472,8 +473,10 @@ int existsInSet(int **set, int blocksPerSet, int *address, struct blockConfig bl
 
     // printBlockLayout(blockConfig);
 
+    // Check each block in the set for a match
     for(int i = 0; i < blocksPerSet; i++){
         int *block = set[i];
+
         if(block[0] == 0){
             // Block is invalid
             continue;
