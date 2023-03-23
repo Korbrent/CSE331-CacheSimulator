@@ -41,13 +41,13 @@ struct config
 };
 
 // BlockConfig struct holds the configuration of a block in the cache
-/* A block is ordered [Valid Bit] [Dirty Bit] [Set Index] [Tag Bits] [Fifo Bits] [Block Offset]*/
+/* A block is ordered [Valid Bit] [Dirty Bit] [Tag Bits] [Set Index] [Fifo Bits] [Block Offset]*/
 struct blockConfig
 {
     int validBit;       // 1 bit
     int dirtyBit;       // 1 bit if write-back, 0 if write-through
+    int tagBits;        // 32 - log2(numSets)
     int setIndexBits;   // log2(numSets)
-    int tagBits;        // 32
     int fifoBits;       // log2(blocksPerSet)
     int blockOffsetBits;// log2(lineSize)
     int blockSize;      // total bits in a block

@@ -59,7 +59,7 @@ struct Cache createCache(int* config){
     }
     associativity = config[1];
 
-    // A block is ordered [Valid Bit] [Dirty Bit] [Set Index] [Tag Bits] [Fifo Bits] [Block Offset]
+    // A block is ordered [Valid Bit] [Dirty Bit] [Tag Bits] [Set Index] [Fifo Bits] [Block Offset]
     // [Valid Bit]
     ret.blockConfig.validBit = 1;
     // [Dirty Bit]
@@ -69,14 +69,14 @@ struct Cache createCache(int* config){
     } else {
         ret.blockConfig.dirtyBit = 0;
     }
+    // [Tag Bits]
+    ret.blockConfig.tagBits = 32 - log2(numSets); // Set bits will be the last n bits of the address
     // [Set Index]
     ret.blockConfig.setIndexBits = log2(numSets);
     if(numSets == 1){
         // Fully associative
         ret.blockConfig.setIndexBits = 0;
     }
-    // [Tag Bits]
-    ret.blockConfig.tagBits = 32;
     // [Fifo Bits]
     if(config[3] == 1){
         // Replacement policy is FIFO
@@ -101,7 +101,7 @@ struct Cache createCache(int* config){
 
     int blockSize = ret.blockConfig.blockSize;
     int setIndex = ret.blockConfig.setIndexBits;
-    int setIndexOffset = ret.blockConfig.validBit + ret.blockConfig.dirtyBit;
+    int setIndexOffset = ret.blockConfig.validBit + ret.blockConfig.dirtyBit + ret.blockConfig.tagBits;
 
     for(int i = 0; i < numSets; i++){
         int *index = intToBinary(i, setIndex); // Get the set index in binary
@@ -219,10 +219,10 @@ void printBlockLayout(struct blockConfig config){
         printf("D");
         k++;
     }
-    for(int i = k; k < config.setIndexBits + i; k++)
-        printf("S");
     for(int i = k; k < config.tagBits + i; k++)
         printf("T");
+    for(int i = k; k < config.setIndexBits + i; k++)
+        printf("S");
     for(int i = k; k < config.fifoBits + i; k++)
         printf("F");
     for(int i = k; k < config.blockOffsetBits + i; k++)
@@ -248,11 +248,9 @@ void printBlockLayout(struct blockConfig config){
  */
 void fifoReplacement(struct Cache cache, int setIndex, int *newTag){
     int **set = cache.cache[setIndex];
-    int tagIndexOffset = 1 + cache.blockConfig.dirtyBit
-                 + log2(cache.blockConfig.numSets);
+    int tagIndexOffset = 1 + cache.blockConfig.dirtyBit;
     int fifoBits = cache.blockConfig.fifoBits;
     int fifoOffset = tagIndexOffset + cache.blockConfig.tagBits;
-
     int blocksPerSet = cache.config.associativity;
 
     // Increase the count before adding the new tag
@@ -321,9 +319,7 @@ void fifoReplacement(struct Cache cache, int setIndex, int *newTag){
  */
 void randomReplacement(struct Cache cache, int setIndex, int *newTag){
     int **set = cache.cache[setIndex];
-    int tagIndexOffset = 1 + cache.blockConfig.dirtyBit
-                 + log2(cache.blockConfig.numSets);
-
+    int tagIndexOffset = 1 + cache.blockConfig.dirtyBit;
     int blocksPerSet = cache.config.associativity;
 
     int flag = 0;
@@ -490,9 +486,7 @@ int store(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){
  */
 int existsInSet(int **set, int blocksPerSet, int *address, struct blockConfig blockConfig){
     // Get the index offset of the tag bits
-    int tagIndexOffset = 1 + blockConfig.dirtyBit + blockConfig.setIndexBits;
-
-    // printBlockLayout(blockConfig);
+    int tagIndexOffset = 1 + blockConfig.dirtyBit; //+ blockConfig.setIndexBits;
 
     // Check each block in the set for a match
     for(int i = 0; i < blocksPerSet; i++){
