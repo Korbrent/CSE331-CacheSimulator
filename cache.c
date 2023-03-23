@@ -1,8 +1,24 @@
+/*************************************************************************
+/
+/ filename: cache.c
+/
+/ description: This file contains the cache functions for the
+/              cache simulator. Includes initialization and
+/              cache access functions.
+/
+/ author: Shelley, Korbin
+/
+/ class: CSE 331
+/ instructor: Zheng
+/ assignment: Lab #2
+/
+/ assigned: 2/28/2023
+/ due: 3/10/2023
+/
+/************************************************************************/
 #include "cache.h"
-#include <math.h>
 
-
-// Cache functions
+// Cache initialization functions
 
 /**
  * Creates the cache
@@ -145,6 +161,9 @@ void freeCache(struct Cache cache){
     }
     free(cache.cache);
 }
+
+
+// Cache print functions
 
 /**
  * Takes in a cache struct and prints the cache
@@ -387,8 +406,11 @@ int load(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){
 }
 
 /**
- * TO DO: Implement this
  * Runs a store operation on the cache
+ * @param cache: The cache to access
+ * @param setIndex: The index of the set to access
+ * @param blockIndex: The index of the block to access
+ * @param trace: The trace struct containing the address
  * @return: The number of cycles the operation took
  */
 int store(struct Cache cache, int setIndex, int blockIndex, struct Trace trace){

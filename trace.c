@@ -1,3 +1,20 @@
+/*************************************************************************
+/
+/ filename: trace.c
+/
+/ description: This file contains functions for reading the trace file and
+/              running the simulation.
+/
+/ author: Shelley, Korbin
+/
+/ class: CSE 331
+/ instructor: Zheng
+/ assignment: Lab #2
+/
+/ assigned: 2/28/2023
+/ due: 3/10/2023
+/
+/************************************************************************/
 #include "trace.h"
 #include "lab2.h"
 

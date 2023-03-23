@@ -1,5 +1,22 @@
+/*************************************************************************
+/
+/ filename: lab2.c
+/
+/ description: This file contains general functions for the cache sim.
+/              Includes base-conversion functions, and reads the config file.
+/
+/
+/ author: Shelley, Korbin
+/
+/ class: CSE 331
+/ instructor: Zheng
+/ assignment: Lab #2
+/
+/ assigned: 2/28/2023
+/ due: 3/10/2023
+/
+/************************************************************************/
 #include "lab2.h"
-#include <math.h>
 /**
  * Functions for the cache simulator
  * @author: Kor Shelley
@@ -22,7 +39,7 @@ int isPowerOfTwo(int x){
  * Converts an integer to binary
  * @param n: The integer to convert
  * @param bits: The number of bits to use (returns NULL if bits is 0)
- * @return: An array of the binary representation of n
+ * @return: An array of the binary representation of n, of size bits (must be freed by caller)
  */
 int* intToBinary(int n, int bits){
     int b = ceil(log2(n));
@@ -51,9 +68,9 @@ int* intToBinary(int n, int bits){
 }
 
 /**
- * Converts a hex string to a binary string
+ * Converts a hex string to a binary int array
  * @param hex: The hex string to convert (must be 8 characters long/32 bits)
- * @return: The binary string (will be 32 bits long)
+ * @return: The binary array, will be 32 bits long, (must be freed by caller)
  */
 int* hexToBinary(char *hex){
     int *binary = malloc(sizeof(int) * 32);

@@ -1,3 +1,21 @@
+/*************************************************************************
+/
+/ filename: lab2.h
+/
+/ description: This file contains general definitions for the cache sim,
+/              including structs that all other files rely upon.
+/              Essentially its my master header file.
+/
+/ author: Shelley, Korbin
+/
+/ class: CSE 331
+/ instructor: Zheng
+/ assignment: Lab #2
+/
+/ assigned: 2/28/2023
+/ due: 3/10/2023
+/
+/************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

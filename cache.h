@@ -1,3 +1,19 @@
+/*************************************************************************
+/
+/ filename: cache.h
+/
+/ description: This file is the header file for the cache.c file.
+/
+/ author: Shelley, Korbin
+/
+/ class: CSE 331
+/ instructor: Zheng
+/ assignment: Lab #2
+/
+/ assigned: 2/28/2023
+/ due: 3/10/2023
+/
+/************************************************************************/
 #include "lab2.h"
 
 #ifndef CACHE_H
