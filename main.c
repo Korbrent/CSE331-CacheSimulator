@@ -84,6 +84,7 @@ int main(int argc, char *argv[]){
     printf("Total Sets:         %d sets\n", cache.blockConfig.numSets);
     printf("Blocks/Set:         %d blocks\n", cache.config.associativity);
     printf("Bits/Block:         %d bits\n", cache.blockConfig.blockSize);
+    // sleep(5);
     // printBlockLayout(cache.blockConfig);
     // printCache(cache);
 
@@ -132,17 +133,17 @@ void writeDataToFile(char *fileName, struct SimData output){
     int storeOps = output.storeHits + output.storeMisses;
     float st_hit_rate = (float)output.storeHits / (float)storeOps;
 
-    printf("Hit rate:           %.2f%%\n", hit_rate * 100);
-    printf("Load hit rate:      %.2f%%\n", ld_hit_rate * 100);
-    printf("Store hit rate:     %.2f%%\n", st_hit_rate * 100);
+    printf("Hit rate:           %.5f%%\n", hit_rate * 100);
+    printf("Load hit rate:      %.5f%%\n", ld_hit_rate * 100);
+    printf("Store hit rate:     %.5f%%\n", st_hit_rate * 100);
 
     if(loadOps + storeOps != output.totalOps)
         printf("Error: Mismatch in op count.\n");
 
     float avg_access_time = (float)output.cycles / (float)output.totalOps;
-    printf("Average access time: %.2f cycles\n", avg_access_time);
+    printf("Average access time: %.5f cycles\n", avg_access_time);
 
-    fprintf(file, "%f\n%f\n%f\n%d\n%f\n",//"%.2f\n%.2f\n%.2f\n%d\n%.2f\n",
+    fprintf(file, "%f\n%f\n%f\n%d\n%f\n",
             hit_rate,
             ld_hit_rate,
             st_hit_rate,
